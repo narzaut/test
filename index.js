@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 //* This line adds 'requireFromRoot' to global object and makes it usable from anywhere in the code
 const express = require('express');
+const dns = require('dns');
 
 const cors = require('cors');
 
