@@ -16,13 +16,13 @@ const corsOptions = {
     optionsSuccessStatus: 204
 };
 app.use('/public', express.static(process.cwd() + '/public'));
-app.get('/', function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
-
+app.get('/', function (req, res) {
+    res.sendFile(process.cwd() + '/views/index.html');
+  });
 app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
     // req.file contains information about the uploaded file
     const { originalname, mimetype, size } = req.file
