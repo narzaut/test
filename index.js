@@ -2,6 +2,7 @@
 //* This line adds 'requireFromRoot' to global object and makes it usable from anywhere in the code
 const express = require('express');
 
+const cors = require('cors');
 
 const app = express();
 const corsOptions = {
