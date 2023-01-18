@@ -16,29 +16,26 @@ const corsOptions = {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
-let urlIndex = 1;
-const urlMap = new Map();
+const urlDb = {};
 
 app.post('/api/shorturl', (req, res) => {
-    const { url } = req.body;
-    if (!isUrl.isUri(url)) {
-        return res.json({ error: 'invalid url' });
-    }
-  
-    urlMap.set(urlIndex, url);
-    res.json({ original_url: url, short_url: urlIndex });
-    urlIndex++;
-  });
+  const { url } = req.body;
+  if (!isUrl.isUri(url)) {
+      return res.json({ error: 'invalid url' });
+  }
 
-app.get('/api/shorturl/:index', (req, res) => {
-  const { index } = req.params;
-  const originalUrl = urlMap.get(index);
+  const shortUrl = shortid.generate();
+  urlDb[shortUrl] = url;
+  res.json({ original_url: url, short_url: shortUrl });
+});
 
-  if (!originalUrl) {
+app.get('/api/shorturl/:shortUrl', (req, res) => {
+  const { shortUrl } = req.params;
+  if (!urlDb[shortUrl]) {
     return res.json({ error: 'invalid short url' });
   }
 
-  res.redirect(originalUrl);
+  res.redirect(urlDb[shortUrl]);
 });
 
 app.listen(4123, () => {
