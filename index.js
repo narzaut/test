@@ -34,12 +34,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     const { _id } = req.params;
     const { description, duration } = req.body;
     const date = new Date().toDateString();
-    const exerciseId = Date.now().toString();
 
     if (!users[_id]) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const exercise = { _id: exerciseId, username: users[_id].username, description, duration: parseFloat(duration), date };
+    const exercise = { username: users[_id].username, description, duration: parseFloat(duration), date };
     users[_id].log.push(exercise);
     res.json({...users[_id], ...exercise });
   });
