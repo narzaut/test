@@ -65,6 +65,13 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     if (limit) {
       logs = logs.slice(0, parseInt(limit));
     }
+    logs = logs.map(log => {
+        return {
+            description: log.description,
+            duration: log.duration,
+            date: log.date.toDateString()
+        }
+    });
     res.json({
       username: users[_id].username,
       count: logs.length,
