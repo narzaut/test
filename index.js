@@ -37,39 +37,40 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     if (!users[_id]) {
       return res.status(404).json({ message: 'User not found' });
     }
-    users[_id].log.push({ description, duration, date });
-    res.json(users[_id]);
+    users[_id].log.push({ description, duration: parseFloat(duration), date });
+    res.json({...users[_id], log: [{description, duration: parseFloat(duration), date}] });
   });
 
-  app.get('/api/users/:_id/logs', (req, res) => {
-    const { _id } = req.params;
-    if (!users[_id]) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    const { from, to, limit } = req.query;
-    let logs = users[_id].log;
-    if (from || to) {
-      logs = logs.filter(log => {
-        const logDate = new Date(log.date);
-        if (from && to) {
-          return logDate >= new Date(from) && logDate <= new Date(to);
-        } else if (from) {
-          return logDate >= new Date(from);
-        } else {
-          return logDate <= new Date(to);
-        }
-      });
-    }
-    if (limit) {
-      logs = logs.slice(0, parseInt(limit));
-    }
-    res.json({
-      username: users[_id].username,
-      count: logs.length,
-      _id: users[_id]._id,
-      log: logs
+app.get('/api/users/:_id/logs', (req, res) => {
+  const { _id } = req.params;
+  if (!users[_id]) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  let logs = users[_id].log;
+  const { from, to, limit } = req.query;
+  if (from || to) {
+    logs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      if (from && to) {
+        return logDate >= new Date(from) && logDate <= new Date(to);
+      } else if (from) {
+        return logDate >= new Date(from);
+      } else {
+        return logDate <= new Date(to);
+      }
     });
+  }
+  if (limit) {
+    logs = logs.slice(0, parseInt(limit));
+  }
+  res.json({
+    username: users[_id].username,
+    count: logs.length,
+    _id: users[_id]._id,
+    log: logs
   });
+});
+
 app.listen(4123, () => {
     console.log(`Listening to port 4123`);
 });
