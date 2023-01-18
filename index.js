@@ -39,6 +39,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     const exercise = { description, duration: parseFloat(duration), date };
+    users[_id].log.push(exercise);
     res.json({...users[_id], ...exercise });
   });
   app.get('/api/users/:_id/logs', (req, res) => {
