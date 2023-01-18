@@ -16,29 +16,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
 
-function convertDate(input = "") {
-    let date;
-    if (input === "") {
-      date = new Date();
-    } else if (!isNaN(input)) {
-      date = new Date(parseInt(input));
-    } else {
-      date = new Date(input);
-    }
-    if (isNaN(date.getTime())) {
-      return { error: "Invalid Date" };
-    } 
-      return {
-        unix: date.getTime(),
-        utc: date.toUTCString()
-      };
-    
-}
-app.use('/api/:date', (req, res, next) => {
-    const { date } = { ...req.params }
-    const formattedDate = convertDate(date);
-    return res.status(200).json(formattedDate);
-});
+app.get('/api/whoami', (req, res) => {
+    const ipaddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const language = req.headers["accept-language"].split(',')[0];
+    const software = req.headers['user-agent'].split(') ')[0].split(' (')[1];
+    res.json({ ipaddress, language, software });
+  });
+  
 
 app.use('/api', (req, res, next) => {
     const formattedDate = convertDate();
