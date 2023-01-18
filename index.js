@@ -69,7 +69,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
         return {
             description: log.description,
             duration: log.duration,
-            date: log.date.toDateString()
+            date: new Date(log.date).toISOString().slice(0,10)
         }
     });
     res.json({
