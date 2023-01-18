@@ -4,6 +4,8 @@ const express = require('express');
 const url = require('url');
 const shortid = require('shortid');
 const cors = require('cors');
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 const app = express();
 const corsOptions = {
@@ -17,62 +19,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
 
-const users = {};
-
-app.post('/api/users', (req, res) => {
-  const { username } = req.body;
-  const _id = Date.now().toString();
-  users[_id] = { username, _id, log: [] };
-  res.json({ username, _id });
-});
-
-app.get('/api/users', (req, res) => {
-  res.json(Object.values(users));
-});
-
-app.post('/api/users/:_id/exercises', (req, res) => {
-    const { _id } = req.params;
-    const { description, duration, date:dateString } = req.body;
-    const date = dateString ? new Date(dateString).toDateString() : new Date().toDateString();
-
-    if (!users[_id]) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    const exercise = { description, duration: parseFloat(duration), date };
-    users[_id].log.push(exercise);
-    const {log, ...rest} = users[_id];
-    res.json({...rest, ...exercise});
-  });
-  app.get('/api/users/:_id/logs', (req, res) => {
-    const { _id } = req.params;
-    if (!users[_id]) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    let logs = users[_id].log;
-    const { from, to, limit } = req.query;
-    if (from || to) {
-      logs = logs.filter(log => {
-        const logDate = new Date(log.date);
-        if (from && to) {
-          return logDate >= new Date(from) && logDate <= new Date(to);
-        } else if (from) {
-          return logDate >= new Date(from);
-        } else {
-          return logDate <= new Date(to);
-        }
-      });
-    }
-    if (limit) {
-      logs = logs.slice(0, parseInt(limit));
-    }
-    
-    res.json({
-      username: users[_id].username,
-      count: logs.length,
-      _id: users[_id]._id,
-      log: logs
-    });
-  });
+app.post('/upload', upload.single('upfile'), (req, res) => {
+    // req.file contains information about the uploaded file
+    const { originalname, mimetype, size } = req.file
+    // send the file information as a JSON response
+    res.json({ name: originalname, type: mimetype, size })
+})
 
 app.listen(4123, () => {
     console.log(`Listening to port 4123`);
