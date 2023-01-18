@@ -17,33 +17,58 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
 
-const urlDb = {};
+const users = {};
 
+app.post('/api/users', (req, res) => {
+  const { username } = req.body;
+  const _id = Date.now().toString();
+  users[_id] = { username, _id, log: [] };
+  res.json({ username, _id });
+});
 
-app.post('/api/shorturl', (req, res) => {
-    const { url } = req.body;
-    const parsedUrl = new URL(url);
-    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-      return res.json({ error: 'invalid url' });
-    }
-  
-    const shortUrl = shortid.generate();
-    urlDb[shortUrl] = url;
-    res.json({ original_url: url, short_url: shortUrl });
-  });
-  
-  app.get('/api/shorturl/:shortUrl', (req, res) => {
-    const { shortUrl } = req.params;
-    if (!urlDb[shortUrl]) {
-      return res.json({ error: 'invalid url' });
-    }
-  
-    res.status(301).redirect(urlDb[shortUrl]);
-  });
+app.get('/api/users', (req, res) => {
+  res.json(Object.values(users));
+});
 
-  app.get('/', (req, res) => {
-    res.status(404).send({ message: 'Not found' });
+app.post('/api/users/:_id/exercises', (req, res) => {
+  const { _id } = req.params;
+  const { description, duration, date = new Date() } = req.body;
+  if (!users[_id]) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  users[_id].log.push({ description, duration, date });
+  res.json(users[_id]);
+});
+
+app.get('/api/users/:_id/logs', (req, res) => {
+  const { _id } = req.params;
+  if (!users[_id]) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  const { from, to, limit } = req.query;
+  let logs = users[_id].log;
+  if (from || to) {
+    logs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      if (from && to) {
+        return logDate >= new Date(from) && logDate <= new Date(to);
+      } else if (from) {
+        return logDate >= new Date(from);
+      } else {
+        return logDate <= new Date(to);
+      }
     });
+  }
+  if (limit) {
+    logs = logs.slice(0, parseInt(limit));
+  }
+  res.json({
+    username: users[_id].username,
+    count: logs.length,
+    _id: users[_id]._id,
+    log: logs
+  });
+});
 app.listen(4123, () => {
     console.log(`Listening to port 4123`);
 });
