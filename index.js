@@ -40,6 +40,10 @@ app.post('/api/shorturl', (req, res) => {
   
     res.status(301).redirect(urlDb[shortUrl]);
   });
+
+  app.get('/', (req, res) => {
+    res.status(404).send({ message: 'Not found' });
+    });
 app.listen(4123, () => {
     console.log(`Listening to port 4123`);
 });
