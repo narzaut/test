@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
 
-app.post('/upload', upload.single('upfile'), (req, res) => {
+app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
     // req.file contains information about the uploaded file
     const { originalname, mimetype, size } = req.file
     // send the file information as a JSON response
