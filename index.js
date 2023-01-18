@@ -20,7 +20,7 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
-app.get('/', function (req, res) {
+app.get('/page/', function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
   });
 app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
