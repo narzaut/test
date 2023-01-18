@@ -5,6 +5,8 @@ services:
     container_name: Template-service
     working_dir: /home/node/app
     command: sh -c "npm install && npm run start"
+    volumes:
+      - ./:/home/node/app
     restart: unless-stopped
     ports:
       - 4123:4123
