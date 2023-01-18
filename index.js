@@ -31,44 +31,45 @@ app.get('/api/users', (req, res) => {
 });
 
 app.post('/api/users/:_id/exercises', (req, res) => {
-  const { _id } = req.params;
-  const { description, duration, date = new Date() } = req.body;
-  if (!users[_id]) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-  users[_id].log.push({ description, duration, date });
-  res.json(users[_id]);
-});
-
-app.get('/api/users/:_id/logs', (req, res) => {
-  const { _id } = req.params;
-  if (!users[_id]) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-  const { from, to, limit } = req.query;
-  let logs = users[_id].log;
-  if (from || to) {
-    logs = logs.filter(log => {
-      const logDate = new Date(log.date);
-      if (from && to) {
-        return logDate >= new Date(from) && logDate <= new Date(to);
-      } else if (from) {
-        return logDate >= new Date(from);
-      } else {
-        return logDate <= new Date(to);
-      }
-    });
-  }
-  if (limit) {
-    logs = logs.slice(0, parseInt(limit));
-  }
-  res.json({
-    username: users[_id].username,
-    count: logs.length,
-    _id: users[_id]._id,
-    log: logs
+    const { _id } = req.params;
+    const { description, duration } = req.body;
+    const date = new Date().toDateString();
+    if (!users[_id]) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    users[_id].log.push({ description, duration, date });
+    res.json(users[_id]);
   });
-});
+
+  app.get('/api/users/:_id/logs', (req, res) => {
+    const { _id } = req.params;
+    if (!users[_id]) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const { from, to, limit } = req.query;
+    let logs = users[_id].log;
+    if (from || to) {
+      logs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        if (from && to) {
+          return logDate >= new Date(from) && logDate <= new Date(to);
+        } else if (from) {
+          return logDate >= new Date(from);
+        } else {
+          return logDate <= new Date(to);
+        }
+      });
+    }
+    if (limit) {
+      logs = logs.slice(0, parseInt(limit));
+    }
+    res.json({
+      username: users[_id].username,
+      count: logs.length,
+      _id: users[_id]._id,
+      log: logs
+    });
+  });
 app.listen(4123, () => {
     console.log(`Listening to port 4123`);
 });
