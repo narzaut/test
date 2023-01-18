@@ -4,9 +4,16 @@ const express = require('express');
 
 
 const app = express();
-
+const corsOptions = {
+    exposedHeaders: 'Content-Range',
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors(corsOptions));
 
 function convertDate(input = "") {
     let date;
