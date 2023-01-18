@@ -20,7 +20,7 @@ app.use(cors(corsOptions));
 const urlDb = {};
 
 
-app.post('/api/shorturl', (req, res, next) => {
+app.post('/api/shorturl', (req, res) => {
     const { url } = req.body;
     const parsedUrl = new URL(url);
     if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
@@ -32,13 +32,13 @@ app.post('/api/shorturl', (req, res, next) => {
     res.json({ original_url: url, short_url: shortUrl });
   });
   
-  app.get('/api/shorturl/:shortUrl', (req, res, next) => {
+  app.get('/api/shorturl/:shortUrl', (req, res) => {
     const { shortUrl } = req.params;
     if (!urlDb[shortUrl]) {
       return res.json({ error: 'invalid url' });
     }
-    console.log(urlDb[shortUrl])
-    res.status(301).set('Location', urlDb[shortUrl]).send();
+  
+    res.status(301).redirect(urlDb[shortUrl]);
   });
 app.listen(4123, () => {
     console.log(`Listening to port 4123`);
