@@ -15,18 +15,33 @@ const corsOptions = {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
+let urlIndex = 1;
+const urlMap = new Map();
 
-app.get('/api/whoami', (req, res) => {
-    const ipaddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const language = req.headers["accept-language"].split(',')[0];
-    const software = req.headers['user-agent'].split(') ')[0].split(' (')[1];
-    res.json({ ipaddress, language, software });
+app.post('/api/shorturl', (req, res) => {
+  const { url } = req.body;
+  const host = new URL(url).host;
+
+  dns.lookup(host, (err) => {
+    if (err) {
+      return res.json({ error: 'invalid url' });
+    }
+
+    urlMap.set(urlIndex, url);
+    res.json({ original_url: url, short_url: urlIndex });
+    urlIndex++;
   });
-  
+});
 
-app.use('/api', (req, res, next) => {
-    const formattedDate = convertDate();
-    return res.status(200).json(formattedDate);        
+app.get('/api/shorturl/:index', (req, res) => {
+  const { index } = req.params;
+  const originalUrl = urlMap.get(index);
+
+  if (!originalUrl) {
+    return res.json({ error: 'invalid short url' });
+  }
+
+  res.redirect(originalUrl);
 });
 
 app.listen(4123, () => {
