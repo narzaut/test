@@ -1,12 +1,15 @@
+version: '3.0'
 services:
   template:
-    container_name: template-service
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    image: node:18.11.0-alpine
+    user: node
+    container_name: Template-service
+    working_dir: /home/node/app
+    command: sh -c "npm install && npm run start"
+    volumes:
+      - ./:/home/node/app
+    restart: unless-stopped
     ports:
       - 4123:4123
-    restart: always
-    volumes:
-      - './:/home/node/app'
+
 
