@@ -39,9 +39,8 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     }
     const exercise = { description, duration: parseFloat(duration), date };
     users[_id].log.push(exercise);
-    res.json({...users[_id], log: [...users[_id].log], exercise });
+    res.json(exercise);
   });
-
 
   app.get('/api/users/:_id/logs', (req, res) => {
     const { _id } = req.params;
