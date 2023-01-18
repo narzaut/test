@@ -37,9 +37,12 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     if (!users[_id]) {
       return res.status(404).json({ message: 'User not found' });
     }
-    users[_id].log.push({ description, duration: parseFloat(duration), date });
-    res.json({...users[_id], log: [...users[_id].log] });
+    const exercise = { description, duration: parseFloat(duration), date };
+    users[_id].log.push(exercise);
+    res.json({...users[_id], log: [...users[_id].log], exercise });
   });
+
+
   app.get('/api/users/:_id/logs', (req, res) => {
     const { _id } = req.params;
     if (!users[_id]) {
