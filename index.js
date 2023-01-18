@@ -33,7 +33,7 @@ app.get('/api/users', (req, res) => {
 app.post('/api/users/:_id/exercises', (req, res) => {
     const { _id } = req.params;
     const { description, duration, date:dateString } = req.body;
-    const date = new Date(dateString).toDateString();
+    const date = dateString ? new Date(dateString).toDateString() : new Date().toDateString();
 
     if (!users[_id]) {
       return res.status(404).json({ message: 'User not found' });
