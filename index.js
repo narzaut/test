@@ -46,24 +46,24 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   app.get('/api/users/:_id/logs', (req, res) => {
     const { _id } = req.params;
     if (!users[_id]) {
-      return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'User not found' });
     }
     let logs = users[_id].log;
     const { from, to, limit } = req.query;
     if (from || to) {
-      logs = logs.filter(log => {
-        const logDate = new Date(log.date);
-        if (from && to) {
-          return logDate >= new Date(from) && logDate <= new Date(to);
-        } else if (from) {
-          return logDate >= new Date(from);
-        } else {
-          return logDate <= new Date(to);
-        }
-      });
+        logs = logs.filter(log => {
+            const logDate = new Date(log.date);
+            if (from && to) {
+                return logDate >= new Date(from) && logDate <= new Date(to);
+            } else if (from) {
+                return logDate >= new Date(from);
+            } else {
+                return logDate <= new Date(to);
+            }
+        });
     }
     if (limit) {
-      logs = logs.slice(0, parseInt(limit));
+        logs = logs.slice(0, parseInt(limit));
     }
     logs = logs.map(log => {
         return {
@@ -73,11 +73,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
         }
     });
     res.json({
-      username: users[_id].username,
-      count: logs.length,
-      _id: users[_id]._id,
-      log: logs
-    });
+        username: users[_id].username,
+        count: logs.length,
+        _id: users[_id]._id,
+        log: logs
+    })
   });
 
 app.listen(4123, () => {
